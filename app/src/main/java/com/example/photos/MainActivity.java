@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.example.photos.Retrofit.GetDataService;
 import com.example.photos.Retrofit.RetrofitClientInstance;
 import com.example.photos.model.Image;
@@ -75,7 +76,9 @@ public final class MainActivity extends AppCompatActivity {
                 else {
                     currIndex++;
                     Log.d(TAG, "Next Image " + currIndex );
-                    Glide.with(MainActivity.this).load(arrayList.get(currIndex)).into(imageView);
+                    Glide.with(MainActivity.this)
+                            .load(arrayList.get(currIndex))
+                            .into(imageView);
                 }
 
             }
