@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +36,8 @@ public final class MainActivity extends AppCompatActivity {
     private EditText editText;
     private  Button submitButton;
     private Button previousImageButton;
+
+    private ProgressBar progressBar;
     private  GetDataService service;
 
     private ArrayList arrayList;
@@ -51,6 +54,7 @@ public final class MainActivity extends AppCompatActivity {
         previousImageButton = findViewById(R.id.previousimagebutton);
         editText = findViewById(R.id.edittext);
         submitButton = findViewById(R.id.submitbutton);
+        progressBar = findViewById(R.id.loadingPanel);
 
 
 
@@ -129,9 +133,13 @@ public final class MainActivity extends AppCompatActivity {
     private void showImage() {
         Call<Image> call = service.getPhoto();
         call.enqueue(new Callback<Image>() {
+
+
             @Override
             public void onResponse(Call<Image> call, Response<Image> response) {
 //                System.out.println(response.body());
+
+                progressBar.setVisibility(View.GONE);
                 Log.d(TAG,response.body().toString());
 
                 arrayList.add(response.body().getMessage().get(0));
@@ -143,6 +151,7 @@ public final class MainActivity extends AppCompatActivity {
             public void onFailure(Call<Image> call, Throwable t) {
                 Log.d(TAG, "onFailure: " + t.toString());
                 Toast.makeText(MainActivity.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
+                imageView.setImageResource(R.drawable.no_connection);
             }
         });
     }

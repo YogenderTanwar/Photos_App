@@ -4,10 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -29,11 +33,13 @@ public class MultipleImageActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private RecyclerViewAdapter recyclerViewAdapter;
+    private ImageView imageView;
     private  List<String> listOfImages;
     private ArrayAdapter<String> arrayAdapter;
 
     private  Integer countOfImages;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +49,9 @@ public class MultipleImageActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycleview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        imageView = findViewById(R.id.imageView);
+        imageView.setImageResource(R.drawable.no_connection);
 
         Intent intent = getIntent();
 
@@ -57,6 +66,7 @@ public class MultipleImageActivity extends AppCompatActivity {
     private void showImages() {
         Call<Image> call = service.getImages(countOfImages);
         call.enqueue(new Callback<Image>() {
+
             @Override
             public void onResponse(Call<Image> call, Response<Image> response) {
                 assert response.body() != null;
@@ -71,7 +81,8 @@ public class MultipleImageActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Image> call, Throwable t) {
-
+                recyclerView.setVisibility(View.GONE);
+                imageView.setVisibility(View.VISIBLE);
                 Toast.makeText(MultipleImageActivity.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
             }
         });
