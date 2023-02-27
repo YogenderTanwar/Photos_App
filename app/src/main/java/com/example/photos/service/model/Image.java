@@ -1,4 +1,4 @@
-package com.example.photos.model;
+package com.example.photos.service.model;
 
 import com.google.gson.annotations.SerializedName;
 

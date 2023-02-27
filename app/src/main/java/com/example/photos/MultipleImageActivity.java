@@ -4,88 +4,43 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.example.photos.Retrofit.GetDataService;
-import com.example.photos.Retrofit.RetrofitClientInstance;
-import com.example.photos.model.Image;
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+
 import com.example.photos.view.adapater.RecyclerViewAdapter;
 
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.util.ArrayList;
 
 public class MultipleImageActivity extends AppCompatActivity {
 
     private static final String TAG = "MultipleImageActivity";
-    private  GetDataService service;
 
     private RecyclerView recyclerView;
     private RecyclerViewAdapter recyclerViewAdapter;
-    private ImageView imageView;
-    private  List<String> listOfImages;
+    private ArrayList<String> listOfImages;
     private ArrayAdapter<String> arrayAdapter;
 
-    private  Integer countOfImages;
+    private Integer countOfImages;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiple_image);
-
-        //Recyclerview initialization
         recyclerView = findViewById(R.id.recycleview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        imageView = findViewById(R.id.imageView);
-        imageView.setImageResource(R.drawable.no_connection);
-
-        Intent intent = getIntent();
-
-        countOfImages =  intent.getIntExtra("Total_Images",1);
-
-        service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-
-        showImages();
+        Bundle bundle = getIntent().getExtras();
+        listOfImages =  bundle.getStringArrayList("Url_Of_Images");
 
     }
 
-    private void showImages() {
-        Call<Image> call = service.getImages(countOfImages);
-        call.enqueue(new Callback<Image>() {
-
-            @Override
-            public void onResponse(Call<Image> call, Response<Image> response) {
-                assert response.body() != null;
-                listOfImages = response.body().getMessage();
-                recyclerViewAdapter = new RecyclerViewAdapter(MultipleImageActivity.this, listOfImages);
-                recyclerView.setAdapter(recyclerViewAdapter);
-
-                for( String url : response.body().getMessage() ) {
-                    Log.d(TAG, "onResponse of Multiple Images" + url);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Image> call, Throwable t) {
-                recyclerView.setVisibility(View.GONE);
-                imageView.setVisibility(View.VISIBLE);
-                Toast.makeText(MultipleImageActivity.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        recyclerViewAdapter = new RecyclerViewAdapter(MultipleImageActivity.this, listOfImages);
+        recyclerView.setAdapter(recyclerViewAdapter);
     }
+
 }

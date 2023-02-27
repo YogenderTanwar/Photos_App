@@ -10,21 +10,18 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.example.photos.Retrofit.GetDataService;
-import com.example.photos.Retrofit.RetrofitClientInstance;
-import com.example.photos.model.Image;
+import com.example.photos.viewmodel.ImageViewModel;
 
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public final class MainActivity extends AppCompatActivity {
@@ -34,16 +31,12 @@ public final class MainActivity extends AppCompatActivity {
     private ImageView imageView;
     private Button nextImageButton;
     private EditText editText;
-    private  Button submitButton;
+    private Button submitButton;
     private Button previousImageButton;
-
     private ProgressBar progressBar;
-    private  GetDataService service;
+    private ImageViewModel imageViewModel;
 
-    private ArrayList arrayList;
-
-    int currIndex = -1;
-
+    private  String currentImageUrl;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,51 +48,31 @@ public final class MainActivity extends AppCompatActivity {
         editText = findViewById(R.id.edittext);
         submitButton = findViewById(R.id.submitbutton);
         progressBar = findViewById(R.id.loadingPanel);
-
-
-
-        service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-
-        arrayList = new ArrayList<String> ();
-
-
+        imageViewModel = new ViewModelProvider(this).get(ImageViewModel.class);
+        listenToObservable();
+        if(savedInstanceState == null) {
+            imageViewModel.getImage();
+        }
+        else {
+            currentImageUrl = savedInstanceState.getString("url");
+            Glide.with(getApplicationContext()).load(currentImageUrl).into(imageView);
+        }
 
     }
+
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        showImage();
-
         nextImageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if(currIndex == arrayList.size()-1) {
-                    showImage();
-                }
-                else {
-                    currIndex++;
-                    Log.d(TAG, "Next Image " + currIndex );
-                    Glide.with(MainActivity.this)
-                            .load(arrayList.get(currIndex))
-                            .into(imageView);
-                }
-
+                imageViewModel.getNextImage();
             }
         });
-
         previousImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(currIndex<=0) {
-                    Toast.makeText(MainActivity.this, "No Previous Image Available Right now", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                   currIndex--;
-                    Log.d(TAG, "Previous Image " + currIndex );
-                    Glide.with(MainActivity.this).load(arrayList.get(currIndex)).into(imageView);
-
-                }
+                imageViewModel.getPreviousImage();
             }
         });
 
@@ -107,52 +80,58 @@ public final class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String text = editText.getText().toString();
-
-
-                if(text.isEmpty()) return ;
+                if (text.isEmpty()) return;
                 Integer currValue = Integer.valueOf(text);
-
-                if(currValue>0 && currValue <= 10 ) {
-                    Toast.makeText(MainActivity.this, "Horray correct value", Toast.LENGTH_SHORT).show();
-                    Intent myIntent = new Intent(MainActivity.this, MultipleImageActivity.class);
-                    myIntent.putExtra("Total_Images", currValue); //Optional parameters
-                    MainActivity.this.startActivity(myIntent);
-                }
-                else {
-
+                if (inputTextValidation(currValue)) {
+                    imageViewModel.getImages(currValue);
+                } else {
                     Toast.makeText(MainActivity.this, "Please enter value between 1 to 10", Toast.LENGTH_SHORT).show();
                 }
 
             }
         });
 
-
-
     }
 
-    private void showImage() {
-        Call<Image> call = service.getPhoto();
-        call.enqueue(new Callback<Image>() {
+    private void listenToObservable() {
+        imageViewModel.singleImageActivityToViewModelObservable.subscribe(
+                url -> {
+                    currentImageUrl = url;
+                    Glide.with(getApplicationContext()).load(url).into(imageView);
+                },
+                throwable -> Log.d(TAG, "Throwable " + throwable.getMessage())
+        );
 
 
-            @Override
-            public void onResponse(Call<Image> call, Response<Image> response) {
-//                System.out.println(response.body());
+        imageViewModel.singleImageActivityToViewModelObservableError.subscribe(
+                value -> Toast.makeText(MainActivity.this, value, Toast.LENGTH_SHORT).show(),
+                throwable -> Log.d(TAG, "Throwable " + throwable.getMessage())
+        );
 
-                progressBar.setVisibility(View.GONE);
-                Log.d(TAG,response.body().toString());
+        imageViewModel.multiImageActivityToViewModelObservable.subscribe(
+                urlOfImages -> {
+                    Intent myIntent = new Intent(MainActivity.this, MultipleImageActivity.class);
+                    myIntent.putExtra("Url_Of_Images", new ArrayList<String>(urlOfImages)); //Optional parameters
+                    MainActivity.this.startActivity(myIntent);
+                },
+                throwable -> Log.d(TAG, "Throwable " + throwable.getMessage())
+        );
 
-                arrayList.add(response.body().getMessage().get(0));
-                currIndex++;
-                Glide.with(MainActivity.this).load(response.body().getMessage().get(0)).into(imageView);
-            }
-
-            @Override
-            public void onFailure(Call<Image> call, Throwable t) {
-                Log.d(TAG, "onFailure: " + t.toString());
-                Toast.makeText(MainActivity.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
-                imageView.setImageResource(R.drawable.no_connection);
-            }
-        });
+        imageViewModel.internetConnectionErrorImageObservable.subscribe(
+                value -> {
+                    imageView.setImageResource(R.drawable.no_connection);
+                },
+                throwable -> Log.d(TAG, "Throwable " + throwable.getMessage())
+        );
     }
+    private Boolean inputTextValidation(Integer value) {
+        return value > 0 && value <= 10;
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("url",currentImageUrl);
+    }
+
 }

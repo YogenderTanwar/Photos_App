@@ -1,14 +1,13 @@
-package com.example.photos.Retrofit;
+package com.example.photos.service.util;
 
-import com.example.photos.model.Image;
 
-import java.util.List;
+import com.example.photos.service.model.Image;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
-public interface GetDataService {
+public interface ImageFetchingService {
 
     @GET("random")
     public Call<Image> getPhoto();
