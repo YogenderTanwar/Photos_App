@@ -1,10 +1,8 @@
-package com.example.photos.service.repository;
+package com.example.dogimagefetchinglibrary.service.repository;
 
-import android.util.Log;
-
-import com.example.photos.service.model.Image;
-import com.example.photos.service.util.ImageFetchingService;
-import com.example.photos.service.util.RetrofitClientInstance;
+import com.example.dogimagefetchinglibrary.service.model.Image;
+import com.example.dogimagefetchinglibrary.service.util.ImageFetchingService;
+import com.example.dogimagefetchinglibrary.service.util.RetrofitClientInstance;
 
 import java.util.List;
 
@@ -24,7 +22,7 @@ public class ImageRepository {
     public PublishSubject<String> multiImageViewModelToModelObservableError;
 
 
-    private  ImageRepository() {
+    private ImageRepository() {
         Retrofit retrofit = RetrofitClientInstance.getRetrofitInstance();
         imageFetchingService = RetrofitClientInstance.getRetrofitInstance().create(ImageFetchingService.class);
         singleImageViewModelToModelObservable = PublishSubject.create();

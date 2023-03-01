@@ -1,4 +1,4 @@
-package com.example.photos.service.util;
+package com.example.dogimagefetchinglibrary.service.util;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;

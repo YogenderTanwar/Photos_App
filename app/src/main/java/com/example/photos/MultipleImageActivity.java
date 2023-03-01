@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 
-import com.example.photos.view.adapater.RecyclerViewAdapter;
+import com.example.dogimagefetchinglibrary.view.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 

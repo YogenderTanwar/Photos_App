@@ -16,11 +16,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.example.photos.viewmodel.ImageViewModel;
 
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import com.example.dogimagefetchinglibrary.viewmodel.ImageViewModel;
+
 
 
 

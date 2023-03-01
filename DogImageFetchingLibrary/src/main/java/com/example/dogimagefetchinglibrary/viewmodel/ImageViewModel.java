@@ -1,12 +1,12 @@
-package com.example.photos.viewmodel;
-
-
+package com.example.dogimagefetchinglibrary.viewmodel;
 
 
 import android.util.Log;
+
 import androidx.lifecycle.ViewModel;
 
-import com.example.photos.service.repository.ImageRepository;
+
+import com.example.dogimagefetchinglibrary.service.repository.ImageRepository;
 
 import java.util.ArrayList;
 import java.util.List;

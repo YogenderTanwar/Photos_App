@@ -1,9 +1,5 @@
-package com.example.photos.service.util;
+package com.example.dogimagefetchinglibrary.service.util;
 
-import android.util.Log;
-
-
-import com.example.photos.BuildConfig;
 
 import org.json.JSONArray;
 import org.json.JSONException;

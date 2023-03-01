@@ -1,4 +1,4 @@
-package com.example.photos.view.adapater;
+package com.example.dogimagefetchinglibrary.view;
 
 import android.content.Context;
 import android.util.Log;
@@ -11,7 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.photos.R;
+import com.example.dogimagefetchinglibrary.R;
+
 
 import java.util.List;
 
@@ -28,13 +29,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @NonNull
     @Override
-    public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
        String url = listOfImages.get(position);
         Glide.with(context).load(url).into(holder.imageView);
     }

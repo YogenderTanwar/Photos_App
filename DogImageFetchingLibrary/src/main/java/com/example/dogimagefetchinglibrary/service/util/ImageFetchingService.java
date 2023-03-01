@@ -1,7 +1,8 @@
-package com.example.photos.service.util;
+package com.example.dogimagefetchinglibrary.service.util;
 
 
-import com.example.photos.service.model.Image;
+
+import com.example.dogimagefetchinglibrary.service.model.Image;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
