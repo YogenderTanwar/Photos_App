@@ -25,6 +25,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
@@ -49,11 +54,11 @@ afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                from components.release
-
-                groupId = 'com.github.YogenderTanwar'
-                artifactId = 'DogImageFetchingLibrary'
+                groupId = 'com.github.yogendertanwar'
+                artifactId = 'dogimagefetchinglibrary'
                 version = '1.0.0'
+
+                from components.release
             }
         }
     }
